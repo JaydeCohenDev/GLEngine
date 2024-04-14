@@ -71,6 +71,8 @@ public class Game : GameWindow
     ];
 
     private Stopwatch _timer;
+
+    protected Camera _camera;
         
     private VertexBufferObject _vertexBufferObject;
     private VertexArrayObject _vertexArrayObject;
@@ -84,7 +86,7 @@ public class Game : GameWindow
     public Game()
         : base(GameWindowSettings.Default, new NativeWindowSettings()
         {
-            ClientSize = (800, 600), Title = "OpenTK Matrices! MPW woo"
+            ClientSize = (1280, 720), Title = "OpenTK Matrices! MPW woo"
         })
     {
     }
@@ -95,6 +97,8 @@ public class Game : GameWindow
             
         GL.Enable(EnableCap.DepthTest);
 
+        _camera = new Camera();
+        
         _timer = new Stopwatch();
         _timer.Start();
 
@@ -119,6 +123,8 @@ public class Game : GameWindow
         _texture2 = new Texture("res/textures/awesomeface.png");
         _shader.SetInt("texture1", 0);
         _shader.SetInt("texture2", 1);
+        
+        CursorState = CursorState.Grabbed;
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -136,16 +142,16 @@ public class Game : GameWindow
         float greenValue = (float)Math.Sin(timeValue) / 2.0f + 0.5f;
         _shader.SetVec4("ourColor", 0f, greenValue, 0f, 1f);
         
-        Matrix4 model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(timeValue * 5f));
+        Matrix4 model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(timeValue * 0f));
         _shader.SetMatrix4("model", ref model);
-            
-        Matrix4 view = Matrix4.CreateTranslation(0f, 0f, -3f);
-        float fov = MathHelper.DegreesToRadians(45f);
+
+        Matrix4 view = _camera.ViewMatrix;
+        _shader.SetMatrix4("view", ref view);
+        
+        float fov = MathHelper.DegreesToRadians(90f);
         float aspectRatio = (float)Size.X / (float)Size.Y;
         float nearClip = 0.1f;
         float farClip = 100f;
-        _shader.SetMatrix4("view", ref view);
-            
         Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(fov, aspectRatio, nearClip, farClip);
         _shader.SetMatrix4("projection", ref projection);
             
@@ -160,13 +166,16 @@ public class Game : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
         base.OnUpdateFrame(e);
-
+        
         var input = KeyboardState;
+        
+        if(IsFocused)
+            _camera.OnUpdateFrame(e, input, MousePosition);
 
-        if (input.IsKeyDown(Keys.Escape))
-        {
-            Close();
-        }
+
+        if (input.IsKeyDown(Keys.Escape)) Close();
+        if (input.IsKeyDown(Keys.F11)) WindowState = WindowState.Fullscreen;
+        //MousePosition = new (Size.X/2f, Size.Y/2f);
     }
 
     protected override void OnResize(ResizeEventArgs e)
