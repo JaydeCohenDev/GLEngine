@@ -136,9 +136,8 @@ public class Game : GameWindow
 
         double timeValue = _timer.Elapsed.TotalSeconds;
         float greenValue = (float)Math.Sin(timeValue) / 2.0f + 0.5f;
-        int vertexColorLocation = GL.GetUniformLocation(_shader.Handle, "ourColor");
-        GL.Uniform4(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-            
+        _shader.SetVec4("ourColor", 0f, greenValue, 0f, 1f);
+        
         Matrix4 model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(timeValue * 5f));
         _shader.SetMatrix4("model", ref model);
             
