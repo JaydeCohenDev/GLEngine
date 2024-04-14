@@ -168,14 +168,12 @@ public class Game : GameWindow
         base.OnUpdateFrame(e);
         
         var input = KeyboardState;
-        
+
         if(IsFocused)
             _camera.OnUpdateFrame(e, input, MousePosition);
-
-
+        
         if (input.IsKeyDown(Keys.Escape)) Close();
         if (input.IsKeyDown(Keys.F11)) WindowState = WindowState.Fullscreen;
-        //MousePosition = new (Size.X/2f, Size.Y/2f);
     }
 
     protected override void OnResize(ResizeEventArgs e)
