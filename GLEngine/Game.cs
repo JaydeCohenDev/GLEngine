@@ -119,8 +119,6 @@ public class Game : GameWindow
         _texture2 = new Texture("res/textures/awesomeface.png");
         _shader.SetInt("texture1", 0);
         _shader.SetInt("texture2", 1);
-
-            
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -143,7 +141,7 @@ public class Game : GameWindow
             
         Matrix4 view = Matrix4.CreateTranslation(0f, 0f, -3f);
         float fov = MathHelper.DegreesToRadians(45f);
-        float aspectRatio = Size.X / Size.Y;
+        float aspectRatio = (float)Size.X / (float)Size.Y;
         float nearClip = 0.1f;
         float farClip = 100f;
         _shader.SetMatrix4("view", ref view);
