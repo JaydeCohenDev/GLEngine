@@ -152,7 +152,8 @@ public class Game : GameWindow
         _shader.SetMatrix4("projection", ref projection);
             
         _vertexArrayObject.Bind();
-        GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+        _vertexBufferObject.Draw(_vertexArrayObject);
+        
         //GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             
         SwapBuffers();
