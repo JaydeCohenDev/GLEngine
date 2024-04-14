@@ -74,7 +74,7 @@ public class Game : GameWindow
         
     private VertexBufferObject _vertexBufferObject;
     private VertexArrayObject _vertexArrayObject;
-    private int _elementBufferObject;
+    private ElementBufferObject _elementBufferObject;
 
     private Shader _shader;
 
@@ -109,10 +109,8 @@ public class Game : GameWindow
         _vertexArrayObject.AddAttribute("aTexCoord", 2);
         _vertexArrayObject.MapAttributes();
 
-        _elementBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
-
+        _elementBufferObject = new ElementBufferObject();
+        _elementBufferObject.SetData(_indices);
             
         _shader = new Shader("res/shaders/shader.vert", "res/shaders/shader.frag");
         _shader.Use();
