@@ -67,7 +67,8 @@ public class Game : GameWindow
     //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     // ];
     //
-    protected Mesh? _cubeMesh;
+
+    protected List<Mesh> _cubes = [];
     //
     // private uint[] _indices =
     // [
@@ -135,8 +136,17 @@ public class Game : GameWindow
 
         var cubeShader = new Shader("res/shaders/mesh.vert", "res/shaders/mesh.frag");
         var cubeMat = new Material(cubeShader);
-        _cubeMesh = new CubeMesh();
-        _cubeMesh.SetMaterial(0, cubeMat);
+        
+        for (int i = 0; i < 50; i++)
+        {
+            var cubeMesh = new CubeMesh();
+            cubeMesh.Position.X = (float)Random.Shared.NextDouble() * 20f - 10f;
+            cubeMesh.Position.Y = (float)Random.Shared.NextDouble() * 20f - 10f;
+            cubeMesh.Position.Z = (float)Random.Shared.NextDouble() * 20f - 10f;
+            cubeMesh.SetMaterial(0, cubeMat);
+            _cubes.Add(cubeMesh);
+        }
+        
         
         GL.Enable(EnableCap.DepthTest);
 
@@ -187,33 +197,39 @@ public class Game : GameWindow
         // float greenValue = (float)Math.Sin(timeValue) / 2.0f + 0.5f;
         // _shader.SetVec4("ourColor", 0f, greenValue, 0f, 1f);
         //
-        Matrix4 model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(0f));
-        _cubeMesh.GetMaterial(0).Shader.SetMatrix4("model", ref model);
-        //_shader.SetMatrix4("model", ref model);
         
         Matrix4 view = _camera.ViewMatrix;
-        _cubeMesh.GetMaterial(0).Shader.SetMatrix4("view", ref view);
-        
         float fov = MathHelper.DegreesToRadians(90f);
         float aspectRatio = (float)Size.X / (float)Size.Y;
         float nearClip = 0.1f;
         float farClip = 100f;
         Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(fov, aspectRatio, nearClip, farClip);
-        _cubeMesh.GetMaterial(0).Shader.SetMatrix4("projection", ref projection);
+
+        foreach (var cube in _cubes)
+        {
+            Matrix4 transform = cube.GetTransformMatrix();
+            cube.GetMaterial(0).Shader.SetMatrix4("model", ref transform);
+            cube.GetMaterial(0).Shader.SetMatrix4("view", ref view);
+            cube.GetMaterial(0).Shader.SetMatrix4("projection", ref projection);
+            cube.Render();
+        }
         //     
         // _vertexArrayObject.Bind();
         // _vertexBufferObject.Draw(_vertexArrayObject);
         
         //GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
             
-        _cubeMesh?.Render();
+        //_cubeMesh?.Render();
         SwapBuffers();
     }
 
+    protected float elapsed;
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
         base.OnUpdateFrame(e);
-        
+
+        elapsed += (float)e.Time;
+
         var input = KeyboardState;
 
         if(IsFocused)
