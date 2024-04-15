@@ -62,8 +62,6 @@ public class Camera
         Forward.Z = (float)Math.Cos(MathHelper.DegreesToRadians(Pitch)) * (float)Math.Sin(MathHelper.DegreesToRadians(Yaw));
         Forward = Vector3.Normalize(Forward);
         
-        Console.WriteLine($"Yaw: {Yaw}, Pitch: {Pitch}");
-        
     }
     
 }

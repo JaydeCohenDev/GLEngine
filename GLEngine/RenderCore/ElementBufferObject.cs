@@ -5,6 +5,7 @@ namespace GLEngine.RenderCore;
 public class ElementBufferObject
 {
     public int Handle { get; protected set; }
+    protected uint[] _indices;
     
     public ElementBufferObject()
     {
@@ -16,14 +17,19 @@ public class ElementBufferObject
     {
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, Handle);
     }
+    public void SetData(uint[] indices)
+    {
+        _indices = indices; 
+        GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+    }
 
     public void Unbind()
     {
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
     }
-
-    public void SetData(uint[] indices)
+    
+    public void Draw()
     {
-        GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+        GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
     }
 }

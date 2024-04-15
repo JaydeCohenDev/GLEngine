@@ -64,23 +64,27 @@ public class Shader : IDisposable
 
     public void SetInt(string name, int value)
     {
+        Use();
         int location = GL.GetUniformLocation(Handle, name);
         GL.Uniform1(location, value);
     }
     
     public void SetVec4(string name, float x, float y, float z, float w)
     {
+        Use();
         int location = GL.GetUniformLocation(Handle, name);
         GL.Uniform4(location, x, y, z, w);
     }
 
     public void SetVec4(string name, Vector4 value)
     {
+        Use();
         SetVec4(name, value.X, value.Y, value.Z, value.W);
     }
 
     public void SetMatrix4(string name, ref Matrix4 matrix)
     {
+        Use();
         int location = GL.GetUniformLocation(Handle, name);
         GL.UniformMatrix4(location, true, ref matrix);
     }
