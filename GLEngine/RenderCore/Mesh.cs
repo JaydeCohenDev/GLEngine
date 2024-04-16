@@ -12,6 +12,7 @@ public class Mesh
     protected uint[] _triangles = [];
     protected Vector2[] _uvs = [];
     protected Vector3[] _vertexColors = [];
+    protected Vector3[] _normals = [];
     
     protected VertexBufferObject _vbo;
     protected VertexArrayObject _vao;
@@ -23,15 +24,15 @@ public class Mesh
         _vbo = new VertexBufferObject();
         _vao = new VertexArrayObject();
         _ebo = new ElementBufferObject();
-        
     }
 
-    public void CreateMeshSection(int SectionIndex, Vector3[] vertices, uint[] triangles, Vector2[] uvs, Vector3[] vertexColors)
+    public void CreateMeshSection(int SectionIndex, Vector3[] vertices, uint[] triangles, Vector2[] uvs, Vector3[] vertexColors, Vector3[] normals)
     {
         _vertices = vertices;
         _triangles = triangles;
         _uvs = uvs;
         _vertexColors = vertexColors;
+        _normals = normals;
         
         _vbo.Bind();
         _vbo.SetData(GenGLVertices());
@@ -40,6 +41,7 @@ public class Mesh
         _vao.AddAttribute("aPosition", 3);
         _vao.AddAttribute("aTexCoord", 2);
         _vao.AddAttribute("aColor", 3);
+        _vao.AddAttribute("aNormal", 3);
         _vao.MapAttributes();
         
         _ebo.Bind();
@@ -77,18 +79,21 @@ public class Mesh
 
     protected float[] GenGLVertices()
     {
-        var glVertices = new float[_vertices.Length * 8];
+        var glVertices = new float[_vertices.Length * 11];
 
         for (var i = 0; i < _vertices.Length; i++)
         {
-            glVertices[i * 8 + 0] = _vertices[i].X;
-            glVertices[i * 8 + 1] = _vertices[i].Y;
-            glVertices[i * 8 + 2] = _vertices[i].Z;
-            glVertices[i * 8 + 3] = _uvs[i].X;
-            glVertices[i * 8 + 4] = _uvs[i].Y;
-            glVertices[i * 8 + 5] = 0f;//_vertexColors[i].X;
-            glVertices[i * 8 + 6] = 0f;//_vertexColors[i].Y;
-            glVertices[i * 8 + 7] = 0f; //_vertexColors[i].Z;
+            glVertices[i * 11 + 0] = _vertices[i].X;
+            glVertices[i * 11 + 1] = _vertices[i].Y;
+            glVertices[i * 11 + 2] = _vertices[i].Z;
+            glVertices[i * 11 + 3] = _uvs[i].X;
+            glVertices[i * 11 + 4] = _uvs[i].Y;
+            glVertices[i * 11 + 5] = 0f;//_vertexColors[i].X;
+            glVertices[i * 11 + 6] = 0f;//_vertexColors[i].Y;
+            glVertices[i * 11 + 7] = 0f; //_vertexColors[i].Z;
+            glVertices[i * 11 + 8] = _normals[i].X;
+            glVertices[i * 11 + 9] = _normals[i].Y;
+            glVertices[i * 11 + 10] = _normals[i].Z;
         }
         
         return glVertices;

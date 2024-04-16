@@ -11,5 +11,5 @@ void main()
     //OutputColor = mix(texture(texture1, texCoord), texture(texture2, texCoord), 0.2);
     //OutputColor = texture(texture0, texCoord);
     //FragColor = vec4(texCoord, 0.0, 1.0);
-    OutputColor = vec4(0.2, 0.7, 0.5, 1.0);
+    OutputColor = vec4(1.0, 0.5, 0.31, 1.0);
 } 

@@ -81,6 +81,19 @@ public class Shader : IDisposable
         Use();
         SetVec4(name, value.X, value.Y, value.Z, value.W);
     }
+    
+    public void SetVec3(string name, float x, float y, float z)
+    {
+        Use();
+        int location = GL.GetUniformLocation(Handle, name);
+        GL.Uniform3(location, x, y, z);
+    }
+
+    public void SetVec3(string name, Vector3 value)
+    {
+        Use();
+        SetVec3(name, value.X, value.Y, value.Z);
+    }
 
     public void SetMatrix4(string name, ref Matrix4 matrix)
     {

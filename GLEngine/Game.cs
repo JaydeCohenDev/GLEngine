@@ -89,6 +89,8 @@ public class Game : GameWindow
     // private Texture _texture1;
     // private Texture _texture2;
         
+    private readonly Vector3 _lightPos = new Vector3(1.2f, 1.0f, 2.0f);
+    
     public Game()
         : base(GameWindowSettings.Default, new NativeWindowSettings()
         {
@@ -134,7 +136,10 @@ public class Game : GameWindow
     {
         base.OnLoad();
 
-        var cubeShader = new Shader("res/shaders/mesh.vert", "res/shaders/mesh.frag");
+        //AssetManager.LoadModel("res/models/unit_cube.fbx");
+        
+        
+        var cubeShader = new Shader("res/shaders/lit.vert", "res/shaders/lit.frag");
         var cubeMat = new Material(cubeShader);
         
         for (int i = 0; i < 50; i++)
@@ -208,6 +213,8 @@ public class Game : GameWindow
         foreach (var cube in _cubes)
         {
             Matrix4 transform = cube.GetTransformMatrix();
+            cube.GetMaterial(0).Shader.SetVec3("objectColor", new Vector3(1f, .5f, .31f));
+            cube.GetMaterial(0).Shader.SetVec3("lightColor", new Vector3(1f, 1f, 1f));
             cube.GetMaterial(0).Shader.SetMatrix4("model", ref transform);
             cube.GetMaterial(0).Shader.SetMatrix4("view", ref view);
             cube.GetMaterial(0).Shader.SetMatrix4("projection", ref projection);
