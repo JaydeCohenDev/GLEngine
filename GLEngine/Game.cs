@@ -99,6 +99,9 @@ public class Game : GameWindow
         })
     {
         Console.WriteLine("HELLO GLLLL BABY");
+        
+        GL.Enable(EnableCap.CullFace);
+        
         GL.DebugMessageCallback(DebugMessageDelegate, IntPtr.Zero);
         GL.Enable(EnableCap.DebugOutput);
         
@@ -148,6 +151,8 @@ public class Game : GameWindow
             cubeMesh.Position.X = (float)Random.Shared.NextDouble() * 20f - 10f;
             cubeMesh.Position.Y = (float)Random.Shared.NextDouble() * 20f - 10f;
             cubeMesh.Position.Z = (float)Random.Shared.NextDouble() * 20f - 10f;
+            cubeMesh.Rotation.X = MathHelper.DegreesToRadians(-90f);
+            cubeMesh.Rotation.Z = MathHelper.DegreesToRadians((float)Random.Shared.NextDouble() * 360f);
             cubeMesh.SetMaterial(0, cubeMat);
             _cubes.Add(cubeMesh);
         }
@@ -215,6 +220,8 @@ public class Game : GameWindow
             Matrix4 transform = cube.GetTransformMatrix();
             cube.GetMaterial(0).Shader.SetVec3("objectColor", new Vector3(1f, .5f, .31f));
             cube.GetMaterial(0).Shader.SetVec3("lightColor", new Vector3(1f, 1f, 1f));
+            cube.GetMaterial(0).Shader.SetVec3("lightPos", new Vector3(1000f, 1000f, 1000f));
+            cube.GetMaterial(0).Shader.SetVec3("viewPos", _camera.Position);
             cube.GetMaterial(0).Shader.SetMatrix4("model", ref transform);
             cube.GetMaterial(0).Shader.SetMatrix4("view", ref view);
             cube.GetMaterial(0).Shader.SetMatrix4("projection", ref projection);
