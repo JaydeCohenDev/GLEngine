@@ -22,6 +22,7 @@ void main()
     //diff = floor(diff*3) / 3; // Banding
     vec3 diffuse = diff * lightColor;
 
+    //float specularStrength = 0.75;
     float specularStrength = 0.5;
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 reflectDir = reflect(-lightDir, norm);

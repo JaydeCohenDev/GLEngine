@@ -148,11 +148,17 @@ public class Game : GameWindow
         for (int i = 0; i < 50; i++)
         {
             var cubeMesh = new CubeMesh();
-            cubeMesh.Position.X = (float)Random.Shared.NextDouble() * 20f - 10f;
-            cubeMesh.Position.Y = (float)Random.Shared.NextDouble() * 20f - 10f;
-            cubeMesh.Position.Z = (float)Random.Shared.NextDouble() * 20f - 10f;
-            cubeMesh.Rotation.X = MathHelper.DegreesToRadians(-90f);
-            cubeMesh.Rotation.Z = MathHelper.DegreesToRadians((float)Random.Shared.NextDouble() * 360f);
+            Vector3 spawnPos = new Vector3();
+            spawnPos.X = (float)Random.Shared.NextDouble() * 20f - 10f;
+            spawnPos.Y = (float)Random.Shared.NextDouble() * 20f - 10f;
+            spawnPos.Z = (float)Random.Shared.NextDouble() * 20f - 10f;
+            cubeMesh.Transform.SetWorldLocation(spawnPos);
+
+            Vector3 spawnRot = new Vector3();
+            spawnRot.X = MathHelper.DegreesToRadians(-90f);
+            spawnRot.Z = MathHelper.DegreesToRadians((float)Random.Shared.NextDouble() * 360f);
+            cubeMesh.Transform.SetWorldRotation(Rotator.FromEuler(spawnRot));
+            
             cubeMesh.SetMaterial(0, cubeMat);
             _cubes.Add(cubeMesh);
         }
@@ -217,7 +223,7 @@ public class Game : GameWindow
 
         foreach (var cube in _cubes)
         {
-            Matrix4 transform = cube.GetTransformMatrix();
+            Matrix4 transform = cube.Transform.GetMatrix();
             cube.GetMaterial(0).Shader.SetVec3("objectColor", new Vector3(1f, .5f, .31f));
             cube.GetMaterial(0).Shader.SetVec3("lightColor", new Vector3(1f, 1f, 1f));
             cube.GetMaterial(0).Shader.SetVec3("lightPos", new Vector3(1000f, 1000f, 1000f));

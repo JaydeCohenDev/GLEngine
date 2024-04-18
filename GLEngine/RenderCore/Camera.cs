@@ -4,28 +4,29 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace GLEngine.RenderCore;
 
-public class Camera
+public class CameraBase
 {
+    public Transform Transform = new();
+    
+    public Vector3 Position = new(0.0f, 0.0f,  3.0f);
+    public Vector3 Forward = new(0.0f, 0.0f, -1.0f);
+    public Vector3 Up = new(0.0f, 1.0f,  0.0f);
+    public Vector3 Right => Vector3.Normalize(Vector3.Cross(Forward, Up));
+    
     public Matrix4 ViewMatrix
     {
         get => Matrix4.LookAt(Position, Position + Forward, Up);
         protected set { ViewMatrix = value; }
     }
+}
 
+public class Camera : CameraBase
+{
     protected Vector2 _lastPos;
-
     public float Sensitivity = 0.25f;
     public float Speed = 1.5f;
-    public Vector3 Position = new(0.0f, 0.0f,  3.0f);
-    public Vector3 Forward = new(0.0f, 0.0f, -1.0f);
-    public Vector3 Up = new(0.0f, 1.0f,  0.0f);
-    public Vector3 Right => Vector3.Normalize(Vector3.Cross(Forward, Up));
     public float Pitch = 0f;
     public float Yaw = 0f;
-    
-    public Camera()
-    {
-    }
 
     public void OnUpdateFrame(FrameEventArgs e, KeyboardState input, Vector2 mousePos)
     {
@@ -54,14 +55,20 @@ public class Camera
         float deltaY = mousePos.Y - _lastPos.Y;
         _lastPos = new Vector2(mousePos.X, mousePos.Y);
 
+        
         Yaw += deltaX * Sensitivity;
         Pitch = Math.Clamp(Pitch - deltaY * Sensitivity, -89f, 89f);
-        
+
+        // .Rotation.X = MathHelper.DegreesToRadians(Pitch);
+        // .Rotation.Y = MathHelper.DegreesToRadians(-Yaw);
+        // Transform.Rotation.Z = 0f;
+
         Forward.X = (float)Math.Cos(MathHelper.DegreesToRadians(Pitch)) * (float)Math.Cos(MathHelper.DegreesToRadians(Yaw));
         Forward.Y = (float)Math.Sin(MathHelper.DegreesToRadians(Pitch));
         Forward.Z = (float)Math.Cos(MathHelper.DegreesToRadians(Pitch)) * (float)Math.Sin(MathHelper.DegreesToRadians(Yaw));
         Forward = Vector3.Normalize(Forward);
         
+        //Transform.Rotation = Matrix4.LookAt(Transform.Position, Transform.Position + f, new Vector3(0, 1, 0)).ExtractRotation().ToEulerAngles();
     }
     
 }

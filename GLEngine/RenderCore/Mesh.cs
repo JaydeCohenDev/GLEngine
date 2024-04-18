@@ -4,9 +4,7 @@ namespace GLEngine.RenderCore;
 
 public class Mesh
 {
-    public Vector3 Position = Vector3.Zero;
-    public Vector3 Rotation = Vector3.Zero;
-    public Vector3 Scale = Vector3.One;
+    public Transform Transform;    
     
     protected Vector3[] _vertices = [];
     protected uint[] _triangles = [];
@@ -21,6 +19,7 @@ public class Mesh
     
     public Mesh()
     {
+        Transform = new Transform();
         _vbo = new VertexBufferObject();
         _vao = new VertexArrayObject();
         _ebo = new ElementBufferObject();
@@ -63,18 +62,6 @@ public class Mesh
 
     public virtual void Render()
     {
-    }
-
-    public Matrix4 GetTransformMatrix()
-    {
-        Matrix4 translation = Matrix4.CreateTranslation(Position);
-        Quaternion q = Quaternion.FromEulerAngles(Rotation);
-        Matrix4 rotation = Matrix4.CreateFromQuaternion(q);
-        Matrix4 scale = Matrix4.CreateScale(Scale);
-
-        return scale * rotation * translation;
-
-        //Matrix4 model = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(0f));
     }
 
     protected float[] GenGLVertices()
