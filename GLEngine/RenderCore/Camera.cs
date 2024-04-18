@@ -6,17 +6,17 @@ namespace GLEngine.RenderCore;
 
 public class CameraBase
 {
-    public Transform Transform = new();
-    
-    public Vector3 Position = new(0.0f, 0.0f,  3.0f);
-    public Vector3 Forward = new(0.0f, 0.0f, -1.0f);
-    public Vector3 Up = new(0.0f, 1.0f,  0.0f);
-    public Vector3 Right => Vector3.Normalize(Vector3.Cross(Forward, Up));
-    
-    public Matrix4 ViewMatrix
+    public Transform Transform;
+
+    public CameraBase()
     {
-        get => Matrix4.LookAt(Position, Position + Forward, Up);
-        protected set { ViewMatrix = value; }
+        Transform = new Transform();
+    }
+
+    public Matrix4 ViewMatrix()
+    {
+        // Invert the model matrix to create the view matrix
+        return Matrix4.Invert(Transform.GetModelMatrix());
     }
 }
 
@@ -25,50 +25,39 @@ public class Camera : CameraBase
     protected Vector2 _lastPos;
     public float Sensitivity = 0.25f;
     public float Speed = 1.5f;
-    public float Pitch = 0f;
-    public float Yaw = 0f;
 
     public void OnUpdateFrame(FrameEventArgs e, KeyboardState input, Vector2 mousePos)
     {
         float frameSpeed = Speed * (float)e.Time;
-        
+
+        if (_lastPos == Vector2.Zero)
+            _lastPos = new Vector2(mousePos.X, mousePos.Y);
+
         if (input.IsKeyDown(Keys.W))
-            Position += Forward * frameSpeed;
+            Transform.Position += Transform.GetForwardVector() * frameSpeed;
         
         if (input.IsKeyDown(Keys.S))
-            Position -= Forward * frameSpeed;
-
+            Transform.Position += -Transform.GetForwardVector() * frameSpeed;
+        
         if (input.IsKeyDown(Keys.A))
-            Position -= Right * frameSpeed;
+            Transform.Position += -Transform.GetRightVector() * frameSpeed;
         
         if (input.IsKeyDown(Keys.D))
-            Position += Right * frameSpeed;
-
+            Transform.Position += Transform.GetRightVector() * frameSpeed;
+        
         if (input.IsKeyDown(Keys.Space))
-            Position += Up * frameSpeed;
+            Transform.Position += Vector3.UnitY * frameSpeed;
         
         if (input.IsKeyDown(Keys.LeftShift))
-            Position -= Up * frameSpeed;
+            Transform.Position += -Vector3.UnitY * frameSpeed;
 
-        
         float deltaX = mousePos.X - _lastPos.X;
         float deltaY = mousePos.Y - _lastPos.Y;
         _lastPos = new Vector2(mousePos.X, mousePos.Y);
 
-        
-        Yaw += deltaX * Sensitivity;
-        Pitch = Math.Clamp(Pitch - deltaY * Sensitivity, -89f, 89f);
-
-        // .Rotation.X = MathHelper.DegreesToRadians(Pitch);
-        // .Rotation.Y = MathHelper.DegreesToRadians(-Yaw);
-        // Transform.Rotation.Z = 0f;
-
-        Forward.X = (float)Math.Cos(MathHelper.DegreesToRadians(Pitch)) * (float)Math.Cos(MathHelper.DegreesToRadians(Yaw));
-        Forward.Y = (float)Math.Sin(MathHelper.DegreesToRadians(Pitch));
-        Forward.Z = (float)Math.Cos(MathHelper.DegreesToRadians(Pitch)) * (float)Math.Sin(MathHelper.DegreesToRadians(Yaw));
-        Forward = Vector3.Normalize(Forward);
-        
-        //Transform.Rotation = Matrix4.LookAt(Transform.Position, Transform.Position + f, new Vector3(0, 1, 0)).ExtractRotation().ToEulerAngles();
+        // Handle mouse input for looking around
+        Transform.RotateLocal(Vector3.UnitX, -deltaY * Sensitivity);
+        Transform.Rotate(Vector3.UnitY, -deltaX * Sensitivity);
     }
-    
+
 }

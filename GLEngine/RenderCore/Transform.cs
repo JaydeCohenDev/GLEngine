@@ -4,76 +4,84 @@ namespace GLEngine.RenderCore;
 
 public class Transform
 {
-    protected Vector3 _worldPosition;
-    protected Rotator _worldRotation;
-    protected Vector3 _worldScale;
+    public Vector3 Position { get; set; }
+    public Quaternion Rotation { get; set; }
+    public Vector3 Scale { get; set; }
 
-    protected Matrix4 _worldMatrix;
-    protected bool _isDirty;
+    // Additional field for local rotation
+    private Quaternion LocalRotation { get; set; } // can this be combined into one world vector?
 
     public Transform()
     {
-        _worldPosition = Vector3.Zero;
-        _worldRotation = Rotator.FromEuler(Vector3.Zero);
-        _worldScale = Vector3.One;
-        _worldMatrix = Matrix4.Zero;
-        
-        MarkDirty();
+        Position = Vector3.Zero;
+        Rotation = Quaternion.Identity;
+        Scale = Vector3.One;
+        LocalRotation = Quaternion.Identity;
+    }
+
+    public Transform(Vector3 position, Quaternion rotation, Vector3 scale)
+    {
+        Position = position;
+        Rotation = rotation;
+        Scale = scale;
+        LocalRotation = Quaternion.Identity;
+    }
+
+    public Matrix4 GetModelMatrix()
+    {
+        // Apply transformations in the correct order for OpenGL
+        // Local rotation is applied before world rotation
+        return Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(LocalRotation) 
+               * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Position);
+    }
+
+    public void Translate(Vector3 translation)
+    {
+        Position += translation;
+    }
+
+    public void Rotate(Vector3 axis, float angleInDegrees)
+    {
+        // Rotate around the world axis
+        Rotation *= Quaternion.FromAxisAngle(axis, MathHelper.DegreesToRadians(angleInDegrees));
+    }
+
+    public void RotateLocal(Vector3 axis, float angleInDegrees)
+    {
+        // Rotate around the object's local axis
+        LocalRotation *= Quaternion.FromAxisAngle(axis, MathHelper.DegreesToRadians(angleInDegrees));
+    }
+
+    public void LookAt(Vector3 target)
+    {
+        // Calculate direction vector from current position to target
+        Vector3 direction = target - Position;
+        direction.Normalize();
+
+        // Calculate right vector based on world's up vector (usually Y-axis)
+        Vector3 right = Vector3.Cross(Vector3.UnitY, direction);
+        right.Normalize();
+
+        // Calculate up vector using right and direction vectors
+        Vector3 up = Vector3.Cross(direction, right);
+        up.Normalize();
+
+        // Create a rotation matrix based on the new right, up, and direction vectors
+        Matrix4 lookAt = Matrix4.LookAt(Position, target, up);
+
+        // Extract the quaternion representation from the lookAt matrix
+        Rotation = lookAt.ExtractRotation();
     }
     
-    public void SetWorldLocation(Vector3 newLocation)
+    public Vector3 GetForwardVector()
     {
-        _worldPosition = newLocation;
-        MarkDirty();
-    }
-
-    public Vector3 GetWorldLocation()
-    {
-        return _worldPosition;
-    }
-
-    public void SetWorldRotation(Rotator newRotation)
-    {
-        _worldRotation = newRotation;
-        MarkDirty();
-    }
-
-    public Rotator GetWorldRotation()
-    {
-        return _worldRotation;
-    }
-
-    public void SetWorldScale(Vector3 newScale)
-    {
-        _worldScale = newScale;
-        MarkDirty();
-    }
-
-    public Vector3 GetWorldScale()
-    {
-        return _worldScale;
+        // Combine local and world rotations to get the final forward direction
+        return Vector3.Transform(-Vector3.UnitZ, Rotation * LocalRotation);
     }
     
-    public Matrix4 GetMatrix()
+    public Vector3 GetRightVector()
     {
-        if (!_isDirty) return _worldMatrix;
-        
-        var translation = Matrix4.CreateTranslation(_worldPosition);
-             
-        Quaternion q = Quaternion.FromEulerAngles(_worldRotation.GetEuler());
-        var rotation = Matrix4.CreateFromQuaternion(q);
-
-        var scale = Matrix4.CreateScale(_worldScale);
-
-        _worldMatrix = translation * rotation * scale;
-
-        _isDirty = false;
-
-        return _worldMatrix;
-    }
-
-    public void MarkDirty()
-    {
-        _isDirty = true;
+        // Combine local and world rotations to get the final right direction
+        return Vector3.Transform(Vector3.UnitX, Rotation * LocalRotation);
     }
 }

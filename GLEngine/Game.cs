@@ -152,12 +152,12 @@ public class Game : GameWindow
             spawnPos.X = (float)Random.Shared.NextDouble() * 20f - 10f;
             spawnPos.Y = (float)Random.Shared.NextDouble() * 20f - 10f;
             spawnPos.Z = (float)Random.Shared.NextDouble() * 20f - 10f;
-            cubeMesh.Transform.SetWorldLocation(spawnPos);
+            cubeMesh.Transform.Position = spawnPos;
 
             Vector3 spawnRot = new Vector3();
             spawnRot.X = MathHelper.DegreesToRadians(-90f);
             spawnRot.Z = MathHelper.DegreesToRadians((float)Random.Shared.NextDouble() * 360f);
-            cubeMesh.Transform.SetWorldRotation(Rotator.FromEuler(spawnRot));
+            cubeMesh.Transform.Rotation = Rotator.FromEuler(spawnRot).GetQuaternion();
             
             cubeMesh.SetMaterial(0, cubeMat);
             _cubes.Add(cubeMesh);
@@ -214,7 +214,7 @@ public class Game : GameWindow
         // _shader.SetVec4("ourColor", 0f, greenValue, 0f, 1f);
         //
         
-        Matrix4 view = _camera.ViewMatrix;
+        Matrix4 view = _camera.ViewMatrix();
         float fov = MathHelper.DegreesToRadians(90f);
         float aspectRatio = (float)Size.X / (float)Size.Y;
         float nearClip = 0.1f;
@@ -223,11 +223,11 @@ public class Game : GameWindow
 
         foreach (var cube in _cubes)
         {
-            Matrix4 transform = cube.Transform.GetMatrix();
+            Matrix4 transform = cube.Transform.GetModelMatrix();
             cube.GetMaterial(0).Shader.SetVec3("objectColor", new Vector3(1f, .5f, .31f));
             cube.GetMaterial(0).Shader.SetVec3("lightColor", new Vector3(1f, 1f, 1f));
             cube.GetMaterial(0).Shader.SetVec3("lightPos", new Vector3(1000f, 1000f, 1000f));
-            cube.GetMaterial(0).Shader.SetVec3("viewPos", _camera.Position);
+            cube.GetMaterial(0).Shader.SetVec3("viewPos", _camera.Transform.Position);
             cube.GetMaterial(0).Shader.SetMatrix4("model", ref transform);
             cube.GetMaterial(0).Shader.SetMatrix4("view", ref view);
             cube.GetMaterial(0).Shader.SetMatrix4("projection", ref projection);
