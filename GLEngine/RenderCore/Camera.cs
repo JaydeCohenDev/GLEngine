@@ -26,9 +26,9 @@ public class Camera : CameraBase
     public float Sensitivity = 0.25f;
     public float Speed = 1.5f;
 
-    public void OnUpdateFrame(FrameEventArgs e, KeyboardState input, Vector2 mousePos)
+    public void OnUpdateFrame(float deltaTime, KeyboardState input, Vector2 mousePos)
     {
-        float frameSpeed = Speed * (float)e.Time;
+        float frameSpeed = Speed * deltaTime;
 
         if (_lastPos == Vector2.Zero)
             _lastPos = new Vector2(mousePos.X, mousePos.Y);
