@@ -9,7 +9,6 @@ namespace CityBuilder;
 
 public class CityBuilder : Game
 {
-    protected Camera _camera;
     private readonly Vector3 _lightPos = new Vector3(1.2f, 1.0f, 2.0f);
     protected List<Mesh> _cubes = [];
     
@@ -28,7 +27,6 @@ public class CityBuilder : Game
     public CityBuilder() : base("City Builder")
     {
         Window.BackgroundColor = Color4.White;
-        _camera = new Camera();
     }
 
     public override void OnLoad()
@@ -71,12 +69,8 @@ public class CityBuilder : Game
         // _texture1.Use(TextureUnit.Texture0);
         // _texture2.Use(TextureUnit.Texture1);
         
-        Matrix4 view = _camera.ViewMatrix();
-        float fov = MathHelper.DegreesToRadians(90f);
-        float aspectRatio = (float)Window.Size.X / (float)Window.Size.Y;
-        float nearClip = 0.1f;
-        float farClip = 100f;
-        Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(fov, aspectRatio, nearClip, farClip);
+        Matrix4 view = MainCamera.ViewMatrix();
+        Matrix4 projection = MainCamera.ProjectionMatrix(Window.Size);
         
         foreach (var cube in _cubes)
         {
@@ -84,7 +78,7 @@ public class CityBuilder : Game
             cube.GetMaterial(0).Shader.SetVec3("objectColor", new Vector3(1f, .5f, .31f));
             cube.GetMaterial(0).Shader.SetVec3("lightColor", new Vector3(1f, 1f, 1f));
             cube.GetMaterial(0).Shader.SetVec3("lightPos", new Vector3(1000f, 1000f, 1000f));
-            cube.GetMaterial(0).Shader.SetVec3("viewPos", _camera.Transform.Position);
+            cube.GetMaterial(0).Shader.SetVec3("viewPos", MainCamera.Transform.Position);
             cube.GetMaterial(0).Shader.SetMatrix4("model", ref transform);
             cube.GetMaterial(0).Shader.SetMatrix4("view", ref view);
             cube.GetMaterial(0).Shader.SetMatrix4("projection", ref projection);
@@ -97,12 +91,12 @@ public class CityBuilder : Game
         KeyboardState? input = Window.KeyboardState;
         
         if(Window.IsFocused)
-            _camera.OnUpdateFrame(input, Window.MousePosition);
+            MainCamera.OnUpdateFrame(input, Window.MousePosition);
         
-        if (input.IsKeyDown(Keys.Escape)) 
+        if (input.IsKeyPressed(Keys.Escape)) 
             Window.Close();
         
-        if (input.IsKeyDown(Keys.F11)) 
-            Window.WindowState = WindowState.Fullscreen;
+        if (input.IsKeyPressed(Keys.F11)) 
+            Window.WindowState = Window.WindowState == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
     }
 }

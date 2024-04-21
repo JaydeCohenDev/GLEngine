@@ -1,9 +1,14 @@
-﻿namespace GLEngine;
+﻿
+
+using GLEngine.RenderCore;
+
+namespace GLEngine;
 
 public class Game
 {
     public GLGameWindow Window { get; protected set; }
     public string Name { get; protected set; }
+    public Camera MainCamera = new();
     
     public Game(string gameName)
     {

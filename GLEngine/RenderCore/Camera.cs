@@ -7,7 +7,10 @@ namespace GLEngine.RenderCore;
 public class CameraBase
 {
     public Transform Transform;
-
+    public float NearClip = 0.1f;
+    public float FarClip = 100f;
+    public float Fov = 90f;
+    
     public CameraBase()
     {
         Transform = new Transform();
@@ -17,6 +20,13 @@ public class CameraBase
     {
         // Invert the model matrix to create the view matrix
         return Matrix4.Invert(Transform.GetModelMatrix());
+    }
+
+    public Matrix4 ProjectionMatrix(Vector2i WindowSize)
+    {
+        float fov = MathHelper.DegreesToRadians(Fov);
+        float aspectRatio = (float)WindowSize.X / (float)WindowSize.Y;
+        return Matrix4.CreatePerspectiveFieldOfView(fov, aspectRatio, NearClip, FarClip);
     }
 }
 
