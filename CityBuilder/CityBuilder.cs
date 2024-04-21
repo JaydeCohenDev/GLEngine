@@ -92,14 +92,12 @@ public class CityBuilder : Game
         }
     }
 
-    protected float elapsed;
-    public override void OnUpdate(float deltaTime)
+    public override void OnUpdate()
     {
-        elapsed += deltaTime;
         KeyboardState? input = Window.KeyboardState;
         
         if(Window.IsFocused)
-            _camera.OnUpdateFrame(deltaTime, input, Window.MousePosition);
+            _camera.OnUpdateFrame(input, Window.MousePosition);
         
         if (input.IsKeyDown(Keys.Escape)) 
             Window.Close();

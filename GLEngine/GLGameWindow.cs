@@ -1,12 +1,9 @@
-﻿using System.Diagnostics;
-using System.Drawing;
-using GLEngine.RenderCore;
+﻿using GLEngine.RenderCore;
 using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace GLEngine;
 
@@ -18,7 +15,7 @@ public class GLGameWindow : GameWindow
 
     public Action OnLoaded;
     public Action OnFrameRender;
-    public Action<float> OnUpdate;
+    public Action OnUpdate;
 
     protected Renderer _renderer;
     
@@ -98,7 +95,10 @@ public class GLGameWindow : GameWindow
     {
         base.OnUpdateFrame(e);
 
-        OnUpdate.Invoke((float)e.Time); // user updating
+        Time.DeltaSeconds = (float)e.Time;
+        Time.ElapsedSeconds += Time.DeltaSeconds;
+        
+        OnUpdate.Invoke(); // user updating
     }
 
     protected override void OnResize(ResizeEventArgs e)

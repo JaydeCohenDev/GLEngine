@@ -22,5 +22,5 @@ public class Game
 
     public virtual void OnLoad() {}
     public virtual void OnRender() {}
-    public virtual void OnUpdate(float deltaTime) {}
+    public virtual void OnUpdate() {}
 }
