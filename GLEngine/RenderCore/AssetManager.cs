@@ -5,12 +5,12 @@ namespace GLEngine.RenderCore;
 
 public abstract class Asset {}
 
-public class Model : Asset
+public class ModelAsset : Asset
 {
     public Scene Scene;
     public Mesh Mesh { get; }
 
-    public Model(Scene scene)
+    public ModelAsset(Scene scene)
     {
         Scene = scene;
         
@@ -35,30 +35,44 @@ public class Model : Asset
     }
 }
 
+public class ShaderAsset : Asset
+{
+    public Shader Shader;
+    
+    public ShaderAsset(string vertPath, string fragPath)
+    {
+        Shader = new Shader("res/shaders/lit.vert", "res/shaders/lit.frag");
+    }
+}
+
 public static class AssetManager
 {
-    private static readonly Dictionary<string, Model> LoadedModels = [];
+    private static readonly Dictionary<string, ModelAsset> LoadedModels = [];
+
+    public static T? LoadAsset<T>(string id) where T : Asset
+    {
+        return null;
+    }
     
-    
-    public static Model? LoadModel(string path)
+    public static ModelAsset? LoadModel(string path)
     {
         // Escape if already loaded!
         if (LoadedModels.ContainsKey(path))
             return GetModel(path); 
         
         var importer = new AssimpContext();
-        Assimp.Scene? scene = importer.ImportFile(path, PostProcessPreset.TargetRealTimeMaximumQuality);
+        Scene? scene = importer.ImportFile(path, PostProcessPreset.TargetRealTimeMaximumQuality);
 
         if (scene is null) return null;
         
-        LoadedModels.Add(path, new Model(scene));
+        LoadedModels.Add(path, new ModelAsset(scene));
         return GetModel(path);
 
     }
 
-    public static Model? GetModel(string path)
+    public static ModelAsset? GetModel(string path)
     {
-        LoadedModels.TryGetValue(path, out Model? value);
+        LoadedModels.TryGetValue(path, out ModelAsset? value);
         return value;
     }
 }

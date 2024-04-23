@@ -6,9 +6,12 @@ public class MonkeyHead : Actor
 {
     public MonkeyHead()
     {
-        Model monkeyMesh = AssetManager.LoadModel("res/models/suzanne.fbx");
+        var cubeShader = new Shader("res/shaders/lit.vert", "res/shaders/lit.frag");
+        var cubeMat = new Material(cubeShader);
         
-        StaticMeshComponent sm = AddComponent<StaticMeshComponent>();
-        sm.SetMesh(monkeyMesh);
+        ModelAsset modelAsset = AssetManager.LoadModel("res/models/suzanne.fbx");
+        var sm = AddComponent<StaticMeshComponent>();
+        sm.SetMesh(modelAsset);
+        sm.SetMaterial(0, cubeMat);
     }
 }

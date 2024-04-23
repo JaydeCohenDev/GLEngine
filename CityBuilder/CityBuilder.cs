@@ -29,18 +29,9 @@ public class CityBuilder : Game
 
     public override void OnLoad()
     {
-        
-        var cubeShader = new Shader("res/shaders/lit.vert", "res/shaders/lit.frag");
-        var cubeMat = new Material(cubeShader);
-
-        Model? monkeyModel = AssetManager.LoadModel("res/models/suzanne_smooth.fbx");
-        
         for (int i = 0; i < 50; i++)
         {
-            var monkeyActor = new Actor();
-            var smc = monkeyActor.AddComponent<StaticMeshComponent>();
-            smc.SetMesh(monkeyModel);
-            smc.SetMaterial(0, cubeMat);
+            var monkeyActor = new MonkeyHead();
             
             Vector3 spawnPos = new Vector3();
             spawnPos.X = (float)Random.Shared.NextDouble() * 20f - 10f;

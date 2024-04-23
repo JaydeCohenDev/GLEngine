@@ -2,7 +2,7 @@
 
 public class ActorComponent
 {
-    public Transform Transform { get; set; } = new();
+    public Transform RelativeTransform { get; set; } = new();
     public uint Id { get; set; }
     public World? World { get; set; }
     public Actor? Owner { get; set; }

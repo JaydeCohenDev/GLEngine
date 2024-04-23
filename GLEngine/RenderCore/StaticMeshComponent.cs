@@ -4,9 +4,9 @@ namespace GLEngine.RenderCore;
 
 public class StaticMeshComponent : ActorComponent
 {
-    public Model? Model { get; protected set; }
+    public ModelAsset? Model { get; protected set; }
 
-    public void SetMesh(Model mesh)
+    public void SetMesh(ModelAsset mesh)
     {
         Model = mesh;
     }
