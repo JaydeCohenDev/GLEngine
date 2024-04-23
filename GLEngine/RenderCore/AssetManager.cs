@@ -3,15 +3,21 @@ using OpenTK.Mathematics;
 
 namespace GLEngine.RenderCore;
 
-public abstract class Asset {}
+public abstract class Asset
+{
+    public abstract void LoadFrom(string path);
+}
 
 public class ModelAsset : Asset
 {
-    public Scene Scene;
-    public Mesh Mesh { get; }
+    public Mesh? Mesh { get; protected set; }
+    protected Scene? Scene;
 
-    public ModelAsset(Scene scene)
+    public override void LoadFrom(string path)
     {
+        var importer = new AssimpContext();
+        Scene? scene = importer.ImportFile(path, PostProcessPreset.TargetRealTimeMaximumQuality);
+        
         Scene = scene;
         
         Assimp.Mesh mesh = scene.Meshes[0];
@@ -37,42 +43,31 @@ public class ModelAsset : Asset
 
 public class ShaderAsset : Asset
 {
-    public Shader Shader;
-    
-    public ShaderAsset(string vertPath, string fragPath)
+    public Shader? Shader;
+
+    public override void LoadFrom(string path)
     {
-        Shader = new Shader("res/shaders/lit.vert", "res/shaders/lit.frag");
+        Shader = new Shader(path+".vert", path+".frag");
     }
 }
 
 public static class AssetManager
 {
-    private static readonly Dictionary<string, ModelAsset> LoadedModels = [];
+    private static readonly Dictionary<string, Asset> LoadedAssets = [];
 
-    public static T? LoadAsset<T>(string id) where T : Asset
+    public static T Load<T>(string path) where T : Asset
     {
-        return null;
-    }
-    
-    public static ModelAsset? LoadModel(string path)
-    {
-        // Escape if already loaded!
-        if (LoadedModels.ContainsKey(path))
-            return GetModel(path); 
+        if (LoadedAssets.TryGetValue(path, out Asset? value)) 
+            return value as T;
         
-        var importer = new AssimpContext();
-        Scene? scene = importer.ImportFile(path, PostProcessPreset.TargetRealTimeMaximumQuality);
-
-        if (scene is null) return null;
-        
-        LoadedModels.Add(path, new ModelAsset(scene));
-        return GetModel(path);
-
+        Asset asset = Activator.CreateInstance(typeof(T)) as Asset ?? throw new InvalidOperationException("Failed to load asset");
+        asset.LoadFrom(path);
+        LoadedAssets.Add(path, asset);
+        return asset as T;
     }
 
-    public static ModelAsset? GetModel(string path)
+    public static T? Get<T>(string path) where T : Asset
     {
-        LoadedModels.TryGetValue(path, out ModelAsset? value);
-        return value;
+        return LoadedAssets[path] as T;
     }
 }
