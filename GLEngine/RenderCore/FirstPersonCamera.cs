@@ -4,16 +4,19 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace GLEngine.RenderCore;
 
-public class CameraBase
+public class Camera
 {
     public Transform Transform;
     public float NearClip = 0.1f;
     public float FarClip = 100f;
     public float Fov = 90f;
+
+    public static Camera Main; // TODO REMOVE... :(
     
-    public CameraBase()
+    public Camera()
     {
         Transform = new Transform();
+        Main = this; // TODO FIXME
     }
 
     public Matrix4 ViewMatrix()
@@ -30,7 +33,7 @@ public class CameraBase
     }
 }
 
-public class Camera : CameraBase
+public class FirstPersonCamera : Camera
 {
     protected Vector2 _lastPos;
     public float Sensitivity = 0.25f;

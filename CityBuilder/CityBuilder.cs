@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using GLEngine;
+﻿using GLEngine;
 using GLEngine.RenderCore;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -10,14 +9,13 @@ namespace CityBuilder;
 public class CityBuilder : Game
 {
     private readonly Vector3 _lightPos = new Vector3(1.2f, 1.0f, 2.0f);
-    protected List<Mesh> _cubes = [];
-    
-    private Stopwatch? _timer;
-    
+    //protected List<Mesh> _cubes = [];
+
+    protected World _world = new();
+
     // private Texture _texture1;
     // private Texture _texture2;
 
-    
     public static void Main(string[] args)
     {
         var game = new CityBuilder();
@@ -34,29 +32,29 @@ public class CityBuilder : Game
         
         var cubeShader = new Shader("res/shaders/lit.vert", "res/shaders/lit.frag");
         var cubeMat = new Material(cubeShader);
+
+        Model? monkeyModel = AssetManager.LoadModel("res/models/suzanne_smooth.fbx");
         
         for (int i = 0; i < 50; i++)
         {
-            var cubeMesh = new CubeMesh();
+            var monkeyActor = new Actor();
+            var smc = monkeyActor.AddComponent<StaticMeshComponent>();
+            smc.SetMesh(monkeyModel);
+            smc.SetMaterial(0, cubeMat);
+            
             Vector3 spawnPos = new Vector3();
             spawnPos.X = (float)Random.Shared.NextDouble() * 20f - 10f;
             spawnPos.Y = (float)Random.Shared.NextDouble() * 20f - 10f;
             spawnPos.Z = (float)Random.Shared.NextDouble() * 20f - 10f;
-            cubeMesh.Transform.Position = spawnPos;
+            monkeyActor.Transform.Position = spawnPos;
 
             Vector3 spawnRot = new Vector3();
             spawnRot.X = MathHelper.DegreesToRadians(-90f);
             spawnRot.Z = MathHelper.DegreesToRadians((float)Random.Shared.NextDouble() * 360f);
-            cubeMesh.Transform.Rotation = Rotator.FromEuler(spawnRot).GetQuaternion();
+            monkeyActor.Transform.Rotation = Rotator.FromEuler(spawnRot).GetQuaternion();
             
-            cubeMesh.SetMaterial(0, cubeMat);
-            _cubes.Add(cubeMesh);
+            _world.Spawn(monkeyActor);
         }
-        
-        // _camera = new Camera();
-        
-        _timer = new Stopwatch();
-        _timer.Start();
         
         // _texture1 = new Texture("res/textures/container.jpg");
         // _texture2 = new Texture("res/textures/awesomeface.png");
@@ -68,22 +66,8 @@ public class CityBuilder : Game
     {
         // _texture1.Use(TextureUnit.Texture0);
         // _texture2.Use(TextureUnit.Texture1);
-        
-        Matrix4 view = MainCamera.ViewMatrix();
-        Matrix4 projection = MainCamera.ProjectionMatrix(Window.Size);
-        
-        foreach (var cube in _cubes)
-        {
-            Matrix4 transform = cube.Transform.GetModelMatrix();
-            cube.GetMaterial(0).Shader.SetVec3("objectColor", new Vector3(1f, .5f, .31f));
-            cube.GetMaterial(0).Shader.SetVec3("lightColor", new Vector3(1f, 1f, 1f));
-            cube.GetMaterial(0).Shader.SetVec3("lightPos", new Vector3(1000f, 1000f, 1000f));
-            cube.GetMaterial(0).Shader.SetVec3("viewPos", MainCamera.Transform.Position);
-            cube.GetMaterial(0).Shader.SetMatrix4("model", ref transform);
-            cube.GetMaterial(0).Shader.SetMatrix4("view", ref view);
-            cube.GetMaterial(0).Shader.SetMatrix4("projection", ref projection);
-            cube.Render();
-        }
+
+        _world.Render();
     }
 
     public override void OnUpdate()
@@ -91,7 +75,7 @@ public class CityBuilder : Game
         KeyboardState? input = Window.KeyboardState;
         
         if(Window.IsFocused)
-            MainCamera.OnUpdateFrame(input, Window.MousePosition);
+            _mainFirstPersonCamera.OnUpdateFrame(input, Window.MousePosition);
         
         if (input.IsKeyPressed(Keys.Escape)) 
             Window.Close();

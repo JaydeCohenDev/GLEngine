@@ -4,6 +4,11 @@ using OpenTK.Mathematics;
 namespace GLEngine.RenderCore;
 public class Renderer
 {
+    public void Render(World world, Camera camera)
+    {
+        
+    }
+    
     public void SetDepthTestEnabled(bool newEnable)
     {
         if (newEnable)

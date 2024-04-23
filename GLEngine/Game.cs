@@ -8,10 +8,14 @@ public class Game
 {
     public GLGameWindow Window { get; protected set; }
     public string Name { get; protected set; }
-    public Camera MainCamera = new();
+    public FirstPersonCamera _mainFirstPersonCamera = new();
+
+    public static Game Instance;
     
     public Game(string gameName)
     {
+        Game.Instance = this;
+        
         Name = gameName;
         Window = new GLGameWindow(Name);
 

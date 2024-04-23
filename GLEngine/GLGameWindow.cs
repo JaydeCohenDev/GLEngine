@@ -84,7 +84,7 @@ public class GLGameWindow : GameWindow
     {
         base.OnRenderFrame(e);
 
-        _renderer.ClearScreen(Color4.Black);
+        _renderer.ClearScreen(BackgroundColor);
 
         OnFrameRender.Invoke(); // user rendering
         

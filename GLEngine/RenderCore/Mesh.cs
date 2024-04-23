@@ -62,6 +62,11 @@ public class Mesh
 
     public virtual void Render()
     {
+        _material?.Bind();
+        _vao.Bind();
+        _vbo.Bind();
+        _ebo.Bind();
+        _ebo.Draw();
     }
 
     protected float[] GenGLVertices()

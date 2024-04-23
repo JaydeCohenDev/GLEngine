@@ -5,7 +5,7 @@ namespace GLEngine.RenderCore;
 public class ElementBufferObject
 {
     public int Handle { get; protected set; }
-    protected uint[] _indices;
+    protected uint[] _indices = [];
     
     public ElementBufferObject()
     {
