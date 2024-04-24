@@ -5,6 +5,8 @@ public class World
     protected uint _nextActorId = 1;
     protected readonly Dictionary<uint, Actor> _actors = [];
 
+    public List<Actor> GetAllActors() =>  _actors.Values.ToList();
+    
     public void Spawn(Actor actor)
     {
         actor.World = this;
@@ -19,11 +21,5 @@ public class World
         actor.EndPlay();
         actor.World = null;
         _actors.Remove(actor.Id);
-    }
-
-    public void Render()
-    {
-        foreach (KeyValuePair<uint, Actor> actor in _actors)
-            actor.Value.Render();
     }
 }

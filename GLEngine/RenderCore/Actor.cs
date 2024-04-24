@@ -42,9 +42,9 @@ public class Actor
         _components.Remove(component.Id);
     }
 
-    public void Render()
+    public void Render(Renderer renderer, Camera camera)
     {
         foreach(KeyValuePair<uint, ActorComponent> component in _components)
-            component.Value.Render();
+            component.Value.Render(renderer, camera);
     }
 }

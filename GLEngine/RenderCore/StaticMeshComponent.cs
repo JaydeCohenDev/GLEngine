@@ -11,25 +11,14 @@ public class StaticMeshComponent : ActorComponent
         Model = mesh;
     }
 
-    public override void Render()
+    public override void Render(Renderer renderer, Camera camera)
     {
-        base.Render();
+        base.Render(renderer, camera);
 
-        if (Model is null) return; // No model to render
+        if (Model is null) return;
+        if (Owner is null) return;
         
-        Matrix4 view = Camera.Main.ViewMatrix();
-        Matrix4 projection = Camera.Main.ProjectionMatrix(Game.Instance.Window.Size);
-        Matrix4 transform = Owner.Transform.GetModelMatrix();
-        
-        Model.Mesh.GetMaterial(0).Shader.SetVec3("objectColor", new Vector3(1f, .5f, .31f));
-        Model.Mesh.GetMaterial(0).Shader.SetVec3("lightColor", new Vector3(1f, 1f, 1f));
-        Model.Mesh.GetMaterial(0).Shader.SetVec3("lightPos", new Vector3(1000f, 1000f, 1000f));
-        Model.Mesh.GetMaterial(0).Shader.SetVec3("viewPos", Camera.Main.Transform.Position);
-        
-        Model.Mesh.GetMaterial(0).Shader.SetMatrix4("model", ref transform);
-        Model.Mesh.GetMaterial(0).Shader.SetMatrix4("view", ref view);
-        Model.Mesh.GetMaterial(0).Shader.SetMatrix4("projection", ref projection);
-        Model.Mesh.Render();
+        renderer.RenderModel(Model, Owner.Transform, camera);
     }
 
     public void SetMaterial(int materialIndex, Material material)

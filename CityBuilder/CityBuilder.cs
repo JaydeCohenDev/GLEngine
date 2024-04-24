@@ -11,6 +11,7 @@ public class CityBuilder : Game
     private readonly Vector3 _lightPos = new Vector3(1.2f, 1.0f, 2.0f);
     //protected List<Mesh> _cubes = [];
 
+    protected Renderer _renderer = new();
     protected World _world = new();
 
     // private Texture _texture1;
@@ -57,8 +58,8 @@ public class CityBuilder : Game
     {
         // _texture1.Use(TextureUnit.Texture0);
         // _texture2.Use(TextureUnit.Texture1);
-
-        _world.Render();
+        
+        _renderer.Render(_world, Camera.Main);
     }
 
     public override void OnUpdate()

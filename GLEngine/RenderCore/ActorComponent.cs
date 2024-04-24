@@ -8,7 +8,7 @@ public class ActorComponent
     public Actor? Owner { get; set; }
     
     public virtual void BeginPlay() {}
-    public virtual void Render() {}
+    public virtual void Render(Renderer renderer, Camera camera) {}
     public virtual void Update() {}
     public virtual void EndPlay() {}
 }
